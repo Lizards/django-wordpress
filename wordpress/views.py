@@ -1,4 +1,4 @@
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import warnings
 
 from django.conf import settings
@@ -65,7 +65,7 @@ class PostDetail(generic.dates.DateDetailView):
         return context
 
     def get_object(self):
-        self.kwargs['slug'] = urllib.quote(self.kwargs['slug'].encode('utf-8')).lower()
+        self.kwargs['slug'] = urllib.parse.quote(self.kwargs['slug'].encode('utf-8')).lower()
         return super(PostDetail, self).get_object()
 
     def get(self, request, *args, **kwargs):

@@ -126,8 +126,6 @@ class User(WordPressModel):
     User object. Referenced by Posts, Comments, and Links
     """
 
-    id = models.AutoField(primary_key=True, db_column='ID')
-
     login = models.CharField(max_length=60, db_column='user_login')
     password = models.CharField(max_length=64, db_column='user_pass')
     username = models.CharField(max_length=255, db_column='user_nicename')
@@ -153,7 +151,7 @@ class UserMeta(WordPressModel):
     """
 
     id = models.IntegerField(db_column='umeta_id', primary_key=True)
-    user = models.ForeignKey(User, related_name="meta", db_column='user_id')
+    user = models.ForeignKey(User, related_name="meta", db_column='user_id', on_delete=models.CASCADE)
     key = models.CharField(max_length=255, db_column='meta_key')
     value = models.TextField(db_column='meta_value')
 
@@ -178,7 +176,7 @@ class Link(WordPressModel):
 #    category_id = models.IntegerField(default=0, db_column='link_category')
     description = models.CharField(max_length=255, db_column='link_description')
     visible = models.CharField(max_length=20, db_column='link_visible')
-    owner = models.ForeignKey(User, related_name='links', db_column='link_owner')
+    owner = models.ForeignKey(User, related_name='links', db_column='link_owner', on_delete=models.CASCADE)
     rating = models.IntegerField(default=0, db_column='link_rating')
     updated = models.DateTimeField(blank=True, null=True, db_column='link_updated')
     rel = models.CharField(max_length=255, db_column='link_rel')
@@ -249,8 +247,8 @@ class PostManager(WordPressManager):
 
 class TermTaxonomyRelationship(WordPressModel):
 
-    object = models.ForeignKey('Post')
-    term_taxonomy = models.ForeignKey('Taxonomy', related_name='relationships', db_column='term_taxonomy_id')
+    object = models.ForeignKey('Post', on_delete=models.CASCADE)
+    term_taxonomy = models.ForeignKey('Taxonomy', related_name='relationships', db_column='term_taxonomy_id', on_delete=models.CASCADE)
     order = models.IntegerField(db_column='term_order')
 
     class Meta:
@@ -275,7 +273,7 @@ class Post(WordPressModel):
     status = models.CharField(max_length=20, db_column='post_status', choices=POST_STATUS_CHOICES)
     title = models.TextField(db_column='post_title')
     slug = models.SlugField(max_length=200, db_column="post_name")
-    author = models.ForeignKey(User, related_name='posts', db_column='post_author')
+    author = models.ForeignKey(User, related_name='posts', db_column='post_author', on_delete=models.CASCADE)
     excerpt = models.TextField(db_column='post_excerpt')
     content = models.TextField(db_column='post_content')
     content_filtered = models.TextField(db_column='post_content_filtered')
@@ -297,7 +295,7 @@ class Post(WordPressModel):
 
     # other various lame fields
     parent_id = models.IntegerField(default=0, db_column="post_parent")
-    # parent = models.ForeignKey('self', related_name="children", db_column="post_parent", blank=True, null=True)
+    # parent = models.ForeignKey('self', related_name="children", db_column="post_parent", blank=True, null=True, on_delete=models.CASCADE)
     menu_order = models.IntegerField(default=0)
     mime_type = models.CharField(max_length=100, db_column='post_mime_type')
 
@@ -404,7 +402,7 @@ class PostMeta(WordPressModel):
     """
 
     id = models.IntegerField(db_column='meta_id', primary_key=True)
-    post = models.ForeignKey(Post, related_name='meta', db_column='post_id')
+    post = models.ForeignKey(Post, related_name='meta', db_column='post_id', on_delete=models.CASCADE)
     key = models.CharField(max_length=255, db_column='meta_key')
     value = models.TextField(db_column='meta_value')
 
@@ -422,9 +420,9 @@ class Comment(WordPressModel):
     """
 
     id = models.IntegerField(db_column='comment_id', primary_key=True)
-    post = models.ForeignKey(Post, related_name="comments", db_column="comment_post_id")
+    post = models.ForeignKey(Post, related_name="comments", db_column="comment_post_id", on_delete=models.CASCADE)
     user_id = models.IntegerField(db_column='user_id', default=0)
-    #user = models.ForeignKey(User, related_name="comments", blank=True, null=True, default=0 )
+    #user = models.ForeignKey(User, related_name="comments", blank=True, null=True, default=0, on_delete=models.CASCADE)
     parent_id = models.IntegerField(default=0, db_column='comment_parent')
 
     # author fields
@@ -492,7 +490,7 @@ class Term(WordPressModel):
 class Taxonomy(WordPressModel):
 
     id = models.IntegerField(db_column='term_taxonomy_id', primary_key=True)
-    term = models.ForeignKey(Term, related_name='taxonomies', blank=True, null=True)
+    term = models.ForeignKey(Term, related_name='taxonomies', blank=True, null=True, on_delete=models.CASCADE)
     #term_id = models.IntegerField()
     name = models.CharField(max_length=32, db_column='taxonomy')
     description = models.TextField()
