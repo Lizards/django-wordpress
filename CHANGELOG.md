@@ -1,5 +1,9 @@
 # Changelog for django-wordpress
 
+## 0.13.0
+
+* Django 2.1 support
+
 ## 0.12.0
 
 * Django 2.0 support
